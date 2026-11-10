@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LPU Campus Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--surface:#fff;--ink:#1b1f2a;--muted:#5d6475;--line:#ded9cf;--accent:#e8590c;--accent-ink:#fff;--soft:#fde8da;--ok:#1f7a4d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--surface:#1b2029;--ink:#eef0f4;--muted:#a1a8b8;--line:#2c3340;--accent:#ff8a4c;--accent-ink:#1b1f2a;--soft:#3a2a20;--ok:#5fd09a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12151c;--surface:#1b2029;--ink:#eef0f4;--muted:#a1a8b8;--line:#2c3340;--accent:#ff8a4c;--accent-ink:#1b1f2a;--soft:#3a2a20;--ok:#5fd09a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Instrument Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;line-height:1.15}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800}
+.sub{color:var(--muted);margin:6px 0 0;max-width:46ch}
+.theme{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;cursor:pointer}
+.search{position:relative;margin-bottom:14px}
+.search input{width:100%;font:inherit;padding:16px 16px 16px 16px;border-radius:14px;border:2px solid var(--ink);background:var(--surface);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:20px}
+.tab{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 14px;font:600 1rem "Instrument Sans",sans-serif;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
+button:focus-visible,input:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.route{display:flex;gap:14px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);font:inherit;cursor:pointer}
+.route:hover{border-color:var(--accent)}
+.num{flex:none;min-width:58px;height:58px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 1.5rem "Bricolage Grotesque",sans-serif}
+.route b{display:block;font-size:1.05rem}
+.route small{color:var(--muted);display:block}
+.hit{margin-top:6px;font-size:.88rem;color:var(--ok);font-weight:600}
+.empty{padding:28px;border:2px dashed var(--line);border-radius:14px;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+select{font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--bg);color:var(--ink);padding:10px 14px;font:inherit;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.banner{background:var(--soft);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-weight:500}
+ol.tl{list-style:none;margin:0;padding:0}
+.tl li{position:relative;display:grid;grid-template-columns:84px 1fr;gap:10px;padding:0 0 22px 28px}
+.tl li::before{content:"";position:absolute;left:7px;top:8px;bottom:-8px;width:2px;background:var(--line)}
+.tl li:last-child::before{display:none}
+.tl li::after{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:3px solid var(--muted)}
+.tl li.past{opacity:.55}.tl li.past::after{background:var(--muted)}
+.tl li.next::after{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 5px var(--soft)}
+.tl li.end::after{border-radius:4px}
+.t{font:800 1.05rem "Bricolage Grotesque",sans-serif;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;margin-left:8px;font-size:.78rem;background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:1px 7px;font-weight:600}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.person.sup{border-left:6px solid var(--accent)}
+.role{color:var(--muted);font-size:.9rem}
+.call{display:inline-block;margin-top:10px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 14px;border-radius:10px}
+.note{color:var(--muted);font-size:.85rem;margin-top:28px}
+mark{background:var(--soft);color:inherit;border-radius:3px;padding:0 2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>LPU Campus Transport</h1>
+    <p class="sub">Find the bus that passes your neighbourhood, check stop timings and call your driver.</p>
+  </div>
+  <button class="theme" id="theme" aria-label="Switch light or dark theme">Theme</button>
+</header>
+
+<div class="search">
+  <input id="q" type="search" placeholder="Search your area, stop or bus number (e.g. Hadiabad, 12)" aria-label="Search routes by neighbourhood, stop or bus number" autocomplete="off">
+</div>
+<div class="chips" id="chips" aria-label="Popular areas"></div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-tab="routes" aria-selected="true">Routes</button>
+  <button class="tab" role="tab" data-tab="timetable" aria-selected="false">Stop timetable</button>
+  <button class="tab" role="tab" data-tab="contacts" aria-selected="false">Contacts</button>
+</div>
+
+<main id="view"></main>
+<p class="note">Routes, timings and phone numbers shown here are sample data for demonstration. Replace them with the official LPU Transport Department details before use.</p>
+</div>
+
+<script>
+// offsets are minutes after the first stop; "to" = towards campus, "from" = leaving campus
+var ROUTES=[
+ {id:"R1",no:"12",name:"Jalandhar City",start:"Jalandhar Bus Stand",dest:"Block 32",to:"06:45",from:"16:30",stops:[["Jalandhar Bus Stand",0],["BMC Chowk",8],["Jalandhar Cantt",18],["Phagwara Bypass",58],["LPU Main Gate",70],["Block 32",76]],sup:"S1",driver:"D1"},
+ {id:"R2",no:"15",name:"Phagwara Town",start:"Phagwara Bus Stand",dest:"Block 34",to:"07:30",from:"17:00",stops:[["Phagwara Bus Stand",0],["Gole Market",6],["Hadiabad",14],["Chachoki Gate",22],["LPU Main Gate",28],["Block 34",34]],sup:"S1",driver:"D2"},
+ {id:"R3",no:"21",name:"Ludhiana Express",start:"Ludhiana Bus Stand",dest:"Block 38",to:"06:15",from:"16:45",stops:[["Ludhiana Bus Stand",0],["Clock Tower",10],["Ladhowal",26],["LPU Main Gate",82],["Block 38",88]],sup:"S2",driver:"D3"},
+ {id:"R4",no:"27",name:"Kapurthala Link",start:"Kapurthala Chowk",dest:"Block 13",to:"07:00",from:"16:30",stops:[["Kapurthala Chowk",0],["Sultanpur Lodhi Road",12],["Dhilwan",24],["Hadiabad",38],["LPU Main Gate",52],["Block 13",58]],sup:"S2",driver:"D4"}
+];
+var PEOPLE=[
+ {id:"S1",name:"Er. Harpreet Singh",role:"Transport Supervisor, Zone A",tel:"+919876500001",sup:1},
+ {id:"S2",name:"Mr. Rajinder Kumar",role:"Transport Supervisor, Zone B",tel:"+919876500002",sup:1},
+ {id:"D1",name:"Balwinder Singh",role:"Driver",tel:"+919876500011"},
+ {id:"D2",name:"Sukhdev Lal",role:"Driver",tel:"+919876500012"},
+ {id:"D3",name:"Manjit Singh",role:"Driver",tel:"+919876500013"},
+ {id:"D4",name:"Ramesh Kumar",role:"Driver",tel:"+919876500014"}
+];
+var AREAS=["Jalandhar","Phagwara","Ludhiana","Kapurthala"];
+var st={tab:"routes",q:"",sel:"R1",dir:"to"};
+var $=function(s){return document.querySelector(s)};
+function pe(id){return PEOPLE.filter(function(p){return p.id===id})[0]}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function mins(t){var a=t.split(":");return +a[0]*60+ +a[1]}
+function fmt(m){m=m%1440;var h=Math.floor(m/60),mm=m%60,ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+(mm<10?"0":"")+mm+" "+ap}
+function schedule(r,dir){
+  var start=mins(dir==="to"?r.to:r.from),total=r.stops[r.stops.length-1][1];
+  var list=r.stops.map(function(s){return {name:s[0],t:start+(dir==="to"?s[1]:total-s[1])}});
+  if(dir==="from")list=list.slice().reverse().map(function(s,i,a){return s}).sort(function(a,b){return a.t-b.t});
+  return list;
+}
+function match(r,q){
+  q=q.trim().toLowerCase();if(!q)return {ok:true};
+  if(r.no===q||("bus "+r.no)===q)return {ok:true};
+  var s=r.stops.filter(function(x){return x[0].toLowerCase().indexOf(q)>-1});
+  if(s.length)return {ok:true,stop:s[0][0]};
+  if(r.name.toLowerCase().indexOf(q)>-1||r.start.toLowerCase().indexOf(q)>-1)return {ok:true};
+  return {ok:false};
+}
+function hl(text,q){
+  q=q.trim();if(!q)return esc(text);
+  var i=text.toLowerCase().indexOf(q.toLowerCase());if(i<0)return esc(text);
+  return esc(text.slice(0,i))+"<mark>"+esc(text.slice(i,i+q.length))+"</mark>"+esc(text.slice(i+q.length));
+}
+function renderRoutes(){
+  var out=ROUTES.map(function(r){return {r:r,m:match(r,st.q)}}).filter(function(x){return x.m.ok});
+  if(!out.length)return '<div class="empty">No bus found for “'+esc(st.q)+'”. Try the name of a nearby town, chowk or bus stop, or clear the search.</div>';
+  return '<div class="grid">'+out.map(function(x){var r=x.r;
+    return '<button class="route" data-open="'+r.id+'"><span class="num">'+r.no+'</span><span><b>'+esc(r.name)+'</b><small>From '+hl(r.start,st.q)+'</small><small>To '+esc(r.dest)+', LPU</small>'+
+    (x.m.stop&&st.q?'<span class="hit">Passes through '+hl(x.m.stop,st.q)+'</span>':'')+'</span></button>'}).join("")+'</div>';
+}
+function renderTimetable(){
+  var r=ROUTES.filter(function(x){return x.id===st.sel})[0];
+  var list=schedule(r,st.dir),d=new Date(),now=d.getHours()*60+d.getMinutes();
+  var ni=-1;for(var i=0;i<list.length;i++){if(list[i].t>=now){ni=i;break}}
+  var banner=ni<0?"All "+(st.dir==="to"?"morning":"evening")+" stops for today have passed. The next run starts at "+fmt(list[0].t)+".":
+    ni===0?"This bus has not started yet. First stop at "+fmt(list[0].t)+".":
+    "Next stop: "+list[ni].name+" at "+fmt(list[ni].t)+".";
+  var opts=ROUTES.map(function(x){return '<option value="'+x.id+'"'+(x.id===st.sel?" selected":"")+'>Bus '+x.no+" – "+esc(x.name)+'</option>'}).join("");
+  var items=list.map(function(s,i){
+    var cls=(ni<0||i<ni?"past":i===ni?"next":"")+(i===list.length-1?" end":"");
+    return '<li class="'+cls+'"><span class="t">'+fmt(s.t)+'</span><span>'+esc(s.name)+(i===ni?'<span class="tag">Next</span>':"")+'</span></li>'}).join("");
+  var dr=pe(r.driver);
+  return '<div class="panel"><div class="bar"><label>Route <select id="sel" aria-label="Choose bus route">'+opts+'</select></label>'+
+   '<div class="seg" role="group" aria-label="Direction"><button data-dir="to" aria-pressed="'+(st.dir==="to")+'">To campus</button><button data-dir="from" aria-pressed="'+(st.dir==="from")+'">From campus</button></div></div>'+
+   '<h2 style="margin-bottom:12px">Bus '+r.no+': '+esc(r.start)+' to '+esc(r.dest)+'</h2><div class="banner">'+banner+'</div><ol class="tl">'+items+'</ol>'+
+   '<a class="call" href="tel:'+dr.tel+'">Call driver '+esc(dr.name)+'</a></div>';
+}
+function card(p,note){return '<div class="person'+(p.sup?" sup":"")+'"><b>'+esc(p.name)+'</b><div class="role">'+esc(p.role)+(note?" · "+esc(note):"")+'</div><a class="call" href="tel:'+p.tel+'" aria-label="Call '+esc(p.name)+'">Call '+p.tel.replace("+91","+91 ").replace(/(\d{5})(\d{5})$/,"$1 $2")+'</a></div>'}
+function renderContacts(){
+  var q=st.q.trim().toLowerCase();
+  var sups=PEOPLE.filter(function(p){return p.sup});
+  var drivers=ROUTES.map(function(r){return {p:pe(r.driver),r:r}}).filter(function(x){
+    return !q||match(x.r,st.q).ok||x.p.name.toLowerCase().indexOf(q)>-1});
+  return '<h2 style="margin-bottom:12px">Transport supervisors</h2><div class="people">'+sups.map(function(p){return card(p)}).join("")+'</div>'+
+   '<h2 style="margin:28px 0 12px">Bus drivers</h2>'+
+   (drivers.length?'<div class="people">'+drivers.map(function(x){return card(x.p,"Bus "+x.r.no+" – "+x.r.name)}).join("")+'</div>':'<div class="empty">No driver matches “'+esc(st.q)+'”. Clear the search to see all drivers.</div>');
+}
+function render(){
+  document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.tab===st.tab)});
+  $("#view").innerHTML=st.tab==="routes"?renderRoutes():st.tab==="timetable"?renderTimetable():renderContacts();
+}
+$("#chips").innerHTML=AREAS.map(function(a){return '<button class="chip" data-area="'+a+'">'+a+'</button>'}).join("");
+$("#q").addEventListener("input",function(e){st.q=e.target.value;if(st.tab==="timetable")st.tab="routes";render()});
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  if(t.dataset.tab){st.tab=t.dataset.tab;render()}
+  else if(t.dataset.open){st.sel=t.dataset.open;st.tab="timetable";render();window.scrollTo(0,0)}
+  else if(t.dataset.dir){st.dir=t.dataset.dir;render()}
+  else if(t.dataset.area){st.q=t.dataset.area;$("#q").value=st.q;if(st.tab==="timetable")st.tab="routes";render()}
+});
+document.addEventListener("change",function(e){if(e.target.id==="sel"){st.sel=e.target.value;render()}});
+$("#theme").addEventListener("click",function(){
+  var r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme=dark?"light":"dark";
+});
+render();
+</script>
+</body>
+</html>
